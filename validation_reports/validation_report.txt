@@ -1,0 +1,440 @@
+================================================================================
+SQL VALIDATION BATCH REPORT
+================================================================================
+Generated: 2025-11-10 15:23:01
+Total Files: 1
+
+OVERALL SUMMARY
+--------------------------------------------------------------------------------
+Total Queries: 69
+Valid: 69 (100.0%)
+Invalid: 0
+Total Warnings: 68
+
+================================================================================
+FILE: example_queries_extended.sql
+================================================================================
+Total Queries: 69
+Valid: 69
+Invalid: 0
+Warnings: 68
+
+
+QUERIES WITH WARNINGS:
+
+  Query #1:
+  SQL: SELECT f.carrid, f.connid, p.cityfrom, p.cityto
+FROM sflight AS f
+INNER JOIN spfli AS p ON f.carrid ...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #2:
+  SQL: SELECT c.name, c.city, b.fldate
+FROM scustom AS c
+LEFT OUTER JOIN sbook AS b ON c.id = b.customid
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #3:
+  SQL: SELECT c.name, b.carrid, b.fldate
+FROM scustom AS c
+RIGHT OUTER JOIN sbook AS b ON c.id = b.customid
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #4:
+  SQL: SELECT c.name, b.carrid
+FROM scustom AS c
+FULL OUTER JOIN sbook AS b ON c.id = b.customid
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #5:
+  SQL: SELECT c.name, s.carrid
+FROM scustom AS c
+CROSS JOIN scarr AS s
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #6:
+  SQL: SELECT f.carrid, f.connid, p.cityfrom, c.name
+FROM sflight AS f
+INNER JOIN spfli AS p ON f.carrid = ...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #7:
+  SQL: SELECT e1.name as employee, e2.name as manager
+FROM employees AS e1
+LEFT JOIN employees AS e2 ON e1....
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #8:
+  SQL: SELECT carrid, COUNT(*) as flight_count
+FROM sflight
+GROUP BY carrid
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #9:
+  SQL: SELECT COUNT(DISTINCT carrid) as unique_carriers
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #10:
+  SQL: SELECT carrid, SUM(seatsocc) as total_seats
+FROM sflight
+GROUP BY carrid
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #11:
+  SQL: SELECT carrid, AVG(seatsocc) as avg_seats
+FROM sflight
+GROUP BY carrid
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #12:
+  SQL: SELECT carrid,
+       MIN(seatsocc) as min_seats,
+       MAX(seatsocc) as max_seats
+FROM sflight
+GRO...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #13:
+  SQL: SELECT carrid,
+       COUNT(*) as flight_count,
+       SUM(seatsocc) as total_seats,
+       AVG(seat...
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #14:
+  SQL: SELECT carrid, connid, COUNT(*) as flight_count
+FROM sflight
+GROUP BY carrid, connid
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #15:
+  SQL: SELECT carrid, AVG(seatsocc) as avg_seats
+FROM sflight
+GROUP BY carrid
+HAVING AVG(seatsocc) > 100 AN...
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #16:
+  SQL: SELECT carrid, connid, fldate,
+       ROW_NUMBER() OVER (ORDER BY fldate) as row_num
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #17:
+  SQL: SELECT carrid, connid, fldate,
+       ROW_NUMBER() OVER (PARTITION BY carrid ORDER BY fldate) as row...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #18:
+  SQL: SELECT carrid, seatsocc,
+       RANK() OVER (ORDER BY seatsocc DESC) as rank
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #19:
+  SQL: SELECT carrid, seatsocc,
+       DENSE_RANK() OVER (ORDER BY seatsocc DESC) as dense_rank
+FROM sfligh...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #20:
+  SQL: SELECT carrid, fldate, seatsocc,
+       LAG(seatsocc, 1) OVER (PARTITION BY carrid ORDER BY fldate) ...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #21:
+  SQL: SELECT carrid, fldate, seatsocc,
+       LEAD(seatsocc, 1) OVER (PARTITION BY carrid ORDER BY fldate)...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #22:
+  SQL: SELECT carrid, seatsocc,
+       SUM(seatsocc) OVER (PARTITION BY carrid) as total_by_carrier
+FROM sf...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #23:
+  SQL: SELECT carrid, seatsocc,
+       AVG(seatsocc) OVER (PARTITION BY carrid) as avg_by_carrier
+FROM sfli...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #24:
+  SQL: SELECT carrid, fldate, seatsocc,
+       FIRST_VALUE(seatsocc) OVER (PARTITION BY carrid ORDER BY fld...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #25:
+  SQL: SELECT carrid, fldate, seatsocc,
+       LAST_VALUE(seatsocc) OVER (PARTITION BY carrid ORDER BY flda...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #26:
+  SQL: SELECT carrid, CURRENT_DATE as today
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #27:
+  SQL: SELECT carrid, CURRENT_TIMESTAMP as now
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #28:
+  SQL: SELECT DATE_TRUNC('month', fldate) as month, COUNT(*) as flight_count
+FROM sflight
+GROUP BY DATE_TRU...
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #29:
+  SQL: SELECT EXTRACT(YEAR FROM fldate) as year,
+       EXTRACT(MONTH FROM fldate) as month,
+       COUNT(*...
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #30:
+  SQL: SELECT carrid, fldate,
+       fldate + INTERVAL '7 days' as next_week,
+       fldate - INTERVAL '30 ...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #31:
+  SQL: SELECT carrid, fldate,
+       fldate - CURRENT_DATE as days_until_flight
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #32:
+  SQL: SELECT CONCAT(carrid, '-', connid) as route_id
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #33:
+  SQL: SELECT carrid || '-' || connid as route_id
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #34:
+  SQL: SELECT carrid, SUBSTRING(carrid, 1, 2) as carrier_prefix
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #35:
+  SQL: SELECT carrid, UPPER(carrid) as carrier_upper
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #36:
+  SQL: SELECT carrid, LOWER(carrid) as carrier_lower
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #37:
+  SQL: SELECT carrid, TRIM(carrid) as carrier_trimmed
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #38:
+  SQL: SELECT carrid, LENGTH(carrid) as carrier_length
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #39:
+  SQL: SELECT carrid, REPLACE(carrid, 'A', 'X') as modified_carrier
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #40:
+  SQL: SELECT carrid, AVG(seatsocc) as avg_seats,
+       ROUND(AVG(seatsocc), 2) as avg_seats_rounded
+FROM ...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #41:
+  SQL: SELECT seatsocc, CEIL(seatsocc / 10.0) as ceiling_val
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #42:
+  SQL: SELECT seatsocc, FLOOR(seatsocc / 10.0) as floor_val
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #43:
+  SQL: SELECT carrid, seatsocc,
+       ABS(seatsocc - 200) as difference_from_200
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #44:
+  SQL: SELECT carrid, seatsocc,
+       MOD(seatsocc, 10) as remainder
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #45:
+  SQL: SELECT seatsocc, POWER(seatsocc, 2) as seats_squared
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #46:
+  SQL: SELECT seatsocc, SQRT(seatsocc) as seats_sqrt
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #47:
+  SQL: SELECT carrid, connid FROM sflight ORDER BY carrid
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #48:
+  SQL: SELECT carrid, connid FROM sflight ORDER BY carrid ASC, connid DESC
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #49:
+  SQL: SELECT carrid, seatsocc FROM sflight ORDER BY seatsocc * 2 DESC
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #50:
+  SQL: SELECT carrid, seatsocc
+FROM sflight
+ORDER BY CASE
+           WHEN seatsocc > 200 THEN 1
+           ...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #51:
+  SQL: SELECT carrid, seatsocc FROM sflight ORDER BY seatsocc NULLS FIRST
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #52:
+  SQL: SELECT carrid, seatsocc FROM sflight ORDER BY seatsocc NULLS LAST
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #57:
+  SQL: WITH carrier_stats AS (
+  SELECT carrid, COUNT(*) as flight_count
+  FROM sflight
+  GROUP BY carrid
+)...
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+
+  Query #58:
+  SQL: WITH carrier_stats AS (
+  SELECT carrid, COUNT(*) as flight_count FROM sflight GROUP BY carrid
+),
+ro...
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #59:
+  SQL: SELECT carrid, seatsocc,
+       (SELECT AVG(seatsocc) FROM sflight) as overall_avg
+FROM sflight
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #60:
+  SQL: SELECT *
+FROM (
+  SELECT carrid, COUNT(*) as cnt FROM sflight GROUP BY carrid
+) AS carrier_stats
+WHE...
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+
+  Query #65:
+  SQL: SELECT carrid, connid,
+       AVG(seatsocc) as avg_seats,
+       COUNT(*) as flight_count
+FROM sflig...
+  Warnings:
+    - Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.
+
+  Query #66:
+  SQL: SELECT carrid, fldate, seatsocc,
+       SUM(seatsocc) OVER (PARTITION BY carrid ORDER BY fldate
+    ...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #67:
+  SQL: WITH yearly_stats AS (
+  SELECT EXTRACT(YEAR FROM fldate) as year,
+         carrid,
+         SUM(sea...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #68:
+  SQL: SELECT carrid,
+       seatsocc,
+       PERCENT_RANK() OVER (PARTITION BY carrid ORDER BY seatsocc) a...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.
+
+  Query #69:
+  SQL: SELECT carrid, fldate, seatsocc,
+       AVG(seatsocc) OVER (PARTITION BY carrid ORDER BY fldate
+    ...
+  Warnings:
+    - Consider adding WHERE clause or LIMIT to restrict result set.

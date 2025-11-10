@@ -1,0 +1,925 @@
+[
+  {
+    "file": "example_queries_extended.sql",
+    "timestamp": "2025-11-10T15:23:01.039630",
+    "queries": [
+      {
+        "query_number": 1,
+        "sql": "SELECT f.carrid, f.connid, p.cityfrom, p.cityto\nFROM sflight AS f\nINNER JOIN spfli AS p ON f.carrid ...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight",
+          "spfli"
+        ]
+      },
+      {
+        "query_number": 2,
+        "sql": "SELECT c.name, c.city, b.fldate\nFROM scustom AS c\nLEFT OUTER JOIN sbook AS b ON c.id = b.customid",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "scustom",
+          "sbook"
+        ]
+      },
+      {
+        "query_number": 3,
+        "sql": "SELECT c.name, b.carrid, b.fldate\nFROM scustom AS c\nRIGHT OUTER JOIN sbook AS b ON c.id = b.customid",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "scustom",
+          "sbook"
+        ]
+      },
+      {
+        "query_number": 4,
+        "sql": "SELECT c.name, b.carrid\nFROM scustom AS c\nFULL OUTER JOIN sbook AS b ON c.id = b.customid",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "scustom",
+          "sbook"
+        ]
+      },
+      {
+        "query_number": 5,
+        "sql": "SELECT c.name, s.carrid\nFROM scustom AS c\nCROSS JOIN scarr AS s",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "scustom",
+          "scarr"
+        ]
+      },
+      {
+        "query_number": 6,
+        "sql": "SELECT f.carrid, f.connid, p.cityfrom, c.name\nFROM sflight AS f\nINNER JOIN spfli AS p ON f.carrid = ...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight",
+          "spfli",
+          "sbook",
+          "scustom"
+        ]
+      },
+      {
+        "query_number": 7,
+        "sql": "SELECT e1.name as employee, e2.name as manager\nFROM employees AS e1\nLEFT JOIN employees AS e2 ON e1....",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "employees",
+          "employees"
+        ]
+      },
+      {
+        "query_number": 8,
+        "sql": "SELECT carrid, COUNT(*) as flight_count\nFROM sflight\nGROUP BY carrid",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.",
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 9,
+        "sql": "SELECT COUNT(DISTINCT carrid) as unique_carriers\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 10,
+        "sql": "SELECT carrid, SUM(seatsocc) as total_seats\nFROM sflight\nGROUP BY carrid",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 11,
+        "sql": "SELECT carrid, AVG(seatsocc) as avg_seats\nFROM sflight\nGROUP BY carrid",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 12,
+        "sql": "SELECT carrid,\n       MIN(seatsocc) as min_seats,\n       MAX(seatsocc) as max_seats\nFROM sflight\nGRO...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 13,
+        "sql": "SELECT carrid,\n       COUNT(*) as flight_count,\n       SUM(seatsocc) as total_seats,\n       AVG(seat...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.",
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 14,
+        "sql": "SELECT carrid, connid, COUNT(*) as flight_count\nFROM sflight\nGROUP BY carrid, connid",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.",
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 15,
+        "sql": "SELECT carrid, AVG(seatsocc) as avg_seats\nFROM sflight\nGROUP BY carrid\nHAVING AVG(seatsocc) > 100 AN...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.",
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 16,
+        "sql": "SELECT carrid, connid, fldate,\n       ROW_NUMBER() OVER (ORDER BY fldate) as row_num\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 17,
+        "sql": "SELECT carrid, connid, fldate,\n       ROW_NUMBER() OVER (PARTITION BY carrid ORDER BY fldate) as row...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 18,
+        "sql": "SELECT carrid, seatsocc,\n       RANK() OVER (ORDER BY seatsocc DESC) as rank\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 19,
+        "sql": "SELECT carrid, seatsocc,\n       DENSE_RANK() OVER (ORDER BY seatsocc DESC) as dense_rank\nFROM sfligh...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 20,
+        "sql": "SELECT carrid, fldate, seatsocc,\n       LAG(seatsocc, 1) OVER (PARTITION BY carrid ORDER BY fldate) ...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 21,
+        "sql": "SELECT carrid, fldate, seatsocc,\n       LEAD(seatsocc, 1) OVER (PARTITION BY carrid ORDER BY fldate)...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 22,
+        "sql": "SELECT carrid, seatsocc,\n       SUM(seatsocc) OVER (PARTITION BY carrid) as total_by_carrier\nFROM sf...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 23,
+        "sql": "SELECT carrid, seatsocc,\n       AVG(seatsocc) OVER (PARTITION BY carrid) as avg_by_carrier\nFROM sfli...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 24,
+        "sql": "SELECT carrid, fldate, seatsocc,\n       FIRST_VALUE(seatsocc) OVER (PARTITION BY carrid ORDER BY fld...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 25,
+        "sql": "SELECT carrid, fldate, seatsocc,\n       LAST_VALUE(seatsocc) OVER (PARTITION BY carrid ORDER BY flda...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 26,
+        "sql": "SELECT carrid, CURRENT_DATE as today\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 27,
+        "sql": "SELECT carrid, CURRENT_TIMESTAMP as now\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 28,
+        "sql": "SELECT DATE_TRUNC('month', fldate) as month, COUNT(*) as flight_count\nFROM sflight\nGROUP BY DATE_TRU...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.",
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 29,
+        "sql": "SELECT EXTRACT(YEAR FROM fldate) as year,\n       EXTRACT(MONTH FROM fldate) as month,\n       COUNT(*...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.",
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 30,
+        "sql": "SELECT carrid, fldate,\n       fldate + INTERVAL '7 days' as next_week,\n       fldate - INTERVAL '30 ...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 31,
+        "sql": "SELECT carrid, fldate,\n       fldate - CURRENT_DATE as days_until_flight\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 32,
+        "sql": "SELECT CONCAT(carrid, '-', connid) as route_id\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 33,
+        "sql": "SELECT carrid || '-' || connid as route_id\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 34,
+        "sql": "SELECT carrid, SUBSTRING(carrid, 1, 2) as carrier_prefix\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 35,
+        "sql": "SELECT carrid, UPPER(carrid) as carrier_upper\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 36,
+        "sql": "SELECT carrid, LOWER(carrid) as carrier_lower\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 37,
+        "sql": "SELECT carrid, TRIM(carrid) as carrier_trimmed\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 38,
+        "sql": "SELECT carrid, LENGTH(carrid) as carrier_length\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 39,
+        "sql": "SELECT carrid, REPLACE(carrid, 'A', 'X') as modified_carrier\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 40,
+        "sql": "SELECT carrid, AVG(seatsocc) as avg_seats,\n       ROUND(AVG(seatsocc), 2) as avg_seats_rounded\nFROM ...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 41,
+        "sql": "SELECT seatsocc, CEIL(seatsocc / 10.0) as ceiling_val\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 42,
+        "sql": "SELECT seatsocc, FLOOR(seatsocc / 10.0) as floor_val\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 43,
+        "sql": "SELECT carrid, seatsocc,\n       ABS(seatsocc - 200) as difference_from_200\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 44,
+        "sql": "SELECT carrid, seatsocc,\n       MOD(seatsocc, 10) as remainder\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 45,
+        "sql": "SELECT seatsocc, POWER(seatsocc, 2) as seats_squared\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 46,
+        "sql": "SELECT seatsocc, SQRT(seatsocc) as seats_sqrt\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 47,
+        "sql": "SELECT carrid, connid FROM sflight ORDER BY carrid",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 48,
+        "sql": "SELECT carrid, connid FROM sflight ORDER BY carrid ASC, connid DESC",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 49,
+        "sql": "SELECT carrid, seatsocc FROM sflight ORDER BY seatsocc * 2 DESC",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 50,
+        "sql": "SELECT carrid, seatsocc\nFROM sflight\nORDER BY CASE\n           WHEN seatsocc > 200 THEN 1\n           ...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 51,
+        "sql": "SELECT carrid, seatsocc FROM sflight ORDER BY seatsocc NULLS FIRST",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 52,
+        "sql": "SELECT carrid, seatsocc FROM sflight ORDER BY seatsocc NULLS LAST",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 53,
+        "sql": "SELECT carrid FROM sflight WHERE carrid = 'AA'\nUNION\nSELECT carrid FROM sflight WHERE carrid = 'LH'",
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "query_type": "Union",
+        "tables": [
+          "sflight",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 54,
+        "sql": "SELECT carrid FROM sflight WHERE carrid = 'AA'\nUNION ALL\nSELECT carrid FROM sflight WHERE carrid = '...",
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "query_type": "Union",
+        "tables": [
+          "sflight",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 55,
+        "sql": "SELECT carrid FROM sflight\nINTERSECT\nSELECT carrid FROM spfli",
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "query_type": "Intersect",
+        "tables": [
+          "sflight",
+          "spfli"
+        ]
+      },
+      {
+        "query_number": 56,
+        "sql": "SELECT carrid FROM sflight\nEXCEPT\nSELECT carrid FROM spfli",
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "query_type": "Except",
+        "tables": [
+          "sflight",
+          "spfli"
+        ]
+      },
+      {
+        "query_number": 57,
+        "sql": "WITH carrier_stats AS (\n  SELECT carrid, COUNT(*) as flight_count\n  FROM sflight\n  GROUP BY carrid\n)...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "carrier_stats",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 58,
+        "sql": "WITH carrier_stats AS (\n  SELECT carrid, COUNT(*) as flight_count FROM sflight GROUP BY carrid\n),\nro...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns.",
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "carrier_stats",
+          "route_stats",
+          "sflight",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 59,
+        "sql": "SELECT carrid, seatsocc,\n       (SELECT AVG(seatsocc) FROM sflight) as overall_avg\nFROM sflight",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 60,
+        "sql": "SELECT *\nFROM (\n  SELECT carrid, COUNT(*) as cnt FROM sflight GROUP BY carrid\n) AS carrier_stats\nWHE...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 61,
+        "sql": "SELECT carrid, seatsocc\nFROM sflight f1\nWHERE seatsocc > (SELECT AVG(seatsocc) FROM sflight f2 WHERE...",
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "query_type": "Select",
+        "tables": [
+          "sflight",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 62,
+        "sql": "SELECT carrid\nFROM spfli p\nWHERE EXISTS (SELECT 1 FROM sflight f WHERE f.carrid = p.carrid)",
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "query_type": "Select",
+        "tables": [
+          "spfli",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 63,
+        "sql": "SELECT carrid\nFROM spfli p\nWHERE NOT EXISTS (SELECT 1 FROM sflight f WHERE f.carrid = p.carrid)",
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "query_type": "Select",
+        "tables": [
+          "spfli",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 64,
+        "sql": "SELECT carrid, connid\nFROM spfli\nWHERE carrid IN (SELECT DISTINCT carrid FROM sflight WHERE seatsocc...",
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "query_type": "Select",
+        "tables": [
+          "spfli",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 65,
+        "sql": "SELECT carrid, connid,\n       AVG(seatsocc) as avg_seats,\n       COUNT(*) as flight_count\nFROM sflig...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Using SELECT * is discouraged in ABAP SQL. Specify explicit columns."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 66,
+        "sql": "SELECT carrid, fldate, seatsocc,\n       SUM(seatsocc) OVER (PARTITION BY carrid ORDER BY fldate\n    ...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 67,
+        "sql": "WITH yearly_stats AS (\n  SELECT EXTRACT(YEAR FROM fldate) as year,\n         carrid,\n         SUM(sea...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "yearly_stats",
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 68,
+        "sql": "SELECT carrid,\n       seatsocc,\n       PERCENT_RANK() OVER (PARTITION BY carrid ORDER BY seatsocc) a...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      },
+      {
+        "query_number": 69,
+        "sql": "SELECT carrid, fldate, seatsocc,\n       AVG(seatsocc) OVER (PARTITION BY carrid ORDER BY fldate\n    ...",
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Consider adding WHERE clause or LIMIT to restrict result set."
+        ],
+        "query_type": "Select",
+        "tables": [
+          "sflight"
+        ]
+      }
+    ],
+    "summary": {
+      "total": 69,
+      "valid": 69,
+      "invalid": 0,
+      "warnings": 68
+    }
+  }
+]

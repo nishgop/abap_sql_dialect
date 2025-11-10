@@ -205,7 +205,7 @@ def main():
     print("    - IN Operator:     3 tests")
     print("    - BETWEEN:         3 tests")
     print("    - LIKE:            3 tests")
-    print("  ABAP Enhanced:      36 tests ⭐ NEW!")
+    print("  ABAP Enhanced:      36 tests")
     print("    - INTO clauses:    4 tests")
     print("    - UP TO/BYPASSING: 7 tests")
     print("    - FOR UPDATE:      2 tests")

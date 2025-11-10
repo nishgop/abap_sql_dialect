@@ -302,17 +302,16 @@ python test_abap_enhanced.py  # 36 enhanced ABAP feature tests
 
 | Document | Description |
 |----------|-------------|
-| **README.md** | Main documentation - start here |
-| **QUICKSTART.md** | Quick start guide with examples |
-| **ABAP_DIALECT_GUIDE.md** | Custom dialect technical reference |
-| **ERROR_DETECTION_IMPROVEMENTS.md** | How we achieved 100% error detection |
+| **README.md** | Main documentation (you are here) |
+| **QUICKSTART.md** | 5-minute quick start guide |
+| **ABAP_DIALECT_GUIDE.md** | Technical reference for custom dialect |
 
-### Example Files
-- `example_queries.sql` - Basic SQL examples
-- `example_queries_extended.sql` - All SQL variants
-- `example_abap_specific.sql` - ABAP-specific syntax
-- `example_queries_enhanced_abap.sql` - 🎉 Enhanced ABAP features (INTO, UP TO, etc.)
-- `example_queries_negative.sql` - Invalid SQL for error testing (60+ intentionally broken queries)
+### Example SQL Files
+- `example_queries.sql` - Basic examples (15 queries)
+- `example_queries_extended.sql` - All SQL variants (85 queries)
+- `example_abap_specific.sql` - ABAP-specific syntax (50 queries)
+- `example_queries_enhanced_abap.sql` - Enhanced ABAP features (60 queries)
+- `example_queries_negative.sql` - Error detection tests (60 queries)
 
 ## 🏗️ Architecture
 
@@ -376,55 +375,30 @@ def _validate_abap_specific_rules(self, ast, errors):
 - [Official Documentation](https://sqlglot.com/sqlglot.html)
 - [Dialect Development](https://github.com/tobymao/sqlglot)
 
+## ⚠️ Known Limitations
+
+Some multi-word ABAP clauses have limited support due to parser architecture:
+- `UP TO n ROWS`, `BYPASSING BUFFER`, `CLIENT SPECIFIED`, `PACKAGE SIZE`
+- Workaround: Use standard SQL equivalents (e.g., `LIMIT` instead of `UP TO n ROWS`)
+- These represent 11 of 178 tests (6% - edge cases)
+
+**What works fully:** All standard SQL, error detection, ABAP string operators, functions, host variables, tilde operator, FOR UPDATE.
+
+## 📈 Statistics
+
+- **Tests**: 167/178 passing (94% success rate)
+- **Features**: 50+ SQL features, 10+ ABAP keywords
+- **Lines**: 3,000+ code, 270+ examples
+
 ## 🤝 Contributing
 
-Contributions are welcome! Areas for enhancement:
+Contributions welcome! See [ABAP_DIALECT_GUIDE.md](ABAP_DIALECT_GUIDE.md) for technical details.
 
-- [ ] Complete UP TO n ROWS parsing
-- [ ] Full BYPASSING BUFFER support
-- [ ] FOR ALL ENTRIES support
-- [ ] PACKAGE SIZE handling
-- [ ] More ABAP-specific functions
-- [ ] Integration with SAP metadata
-
-## 📈 Project Statistics
-
-- **Total Tests**: 121 (100% pass rate)
-- **SQL Features**: 50+ covered
-- **ABAP Keywords**: 10+ supported
-- **Lines of Code**: 3,000+
-- **Documentation**: 2,500+ lines
-
-## 🎉 Success Metrics
-
-✅ **Comprehensive SQL support** - All major SQL variants  
-✅ **ABAP-specific** - Custom dialect with ABAP keywords  
-✅ **Production-ready** - Fully tested and documented  
-✅ **Extensible** - Easy to add new features  
-✅ **Well-documented** - Multiple guides and examples  
-
-## 📄 License
-
-This is a demonstration project. Adjust licensing as needed for your use case.
-
-## 🙏 Acknowledgments
-
-Built with:
-- [SQLGlot](https://sqlglot.com/) - Powerful SQL parser and transpiler
-- [Python](https://www.python.org/) - Programming language
-- [Colorama](https://pypi.org/project/colorama/) - Terminal colors
+Built with [SQLGlot](https://sqlglot.com/), [Python](https://www.python.org/), and [Colorama](https://pypi.org/project/colorama/).
 
 ---
 
-**🚀 Ready to Use!**
-
-Start with the [Quick Start Guide](QUICKSTART.md) or try the demo:
-
-```bash
-python abap_sql_checker.py
-```
-
-For detailed information about the ABAP dialect, see [ABAP_DIALECT_GUIDE.md](ABAP_DIALECT_GUIDE.md).
+**🚀 Quick Start**: Run `python abap_sql_checker.py` or see [QUICKSTART.md](QUICKSTART.md)
 
 ---
 

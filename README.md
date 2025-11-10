@@ -20,6 +20,18 @@ A comprehensive Python-based ABAP SQL syntax checker built using [SQLGlot](https
 - ✅ **ABAP Validations** - Best practices and common pitfalls
 - ✅ **Extensible** - Easy to add more ABAP features
 
+### 🎉 Enhanced ABAP Features (NEW!)
+- ✅ **INTO Clauses** - INTO @var, INTO TABLE @itab, APPENDING TABLE
+- ✅ **INTO CORRESPONDING FIELDS OF** - Structured data mapping
+- ✅ **UP TO n ROWS** - Native ABAP row limiting  
+- ✅ **BYPASSING BUFFER** - Direct database access
+- ✅ **CLIENT SPECIFIED** - Multi-client queries
+- ✅ **FOR UPDATE** - Lock records for update
+- ✅ **PACKAGE SIZE** - Batch processing control
+- ✅ **Tilde (~) Operator** - Table field access (table~field)
+- ✅ **ABAP String Operators** - CP, CS, CA, CO, NP, NS, NA, CN
+- ✅ **ABAP Functions** - CONCAT_WITH_SPACE, STRING_AGG, CAST
+
 ### SQL Variants Supported
 - ✅ All JOIN types (INNER, LEFT, RIGHT, FULL OUTER, CROSS)
 - ✅ Window functions (ROW_NUMBER, RANK, LAG, LEAD, etc.)
@@ -187,6 +199,44 @@ SELECT * FROM sflight BYPASSING BUFFER;
 SELECT * FROM mara CLIENT SPECIFIED WHERE mandt = '100';
 ```
 
+### 🎉 Enhanced ABAP Features
+
+```sql
+-- INTO clauses
+SELECT SINGLE carrid INTO @lv_carrid FROM sflight WHERE connid = '0017';
+SELECT carrid, connid INTO TABLE @lt_flights FROM sflight WHERE carrid = 'AA';
+SELECT * INTO CORRESPONDING FIELDS OF @ls_flight FROM sflight WHERE carrid = 'AA';
+SELECT carrid APPENDING TABLE @lt_more FROM sflight WHERE carrid = 'LH';
+
+-- UP TO n ROWS (ABAP-native row limiting)
+SELECT * FROM sflight WHERE carrid = 'AA' UP TO 100 ROWS;
+
+-- BYPASSING BUFFER (direct database access)
+SELECT * FROM sflight BYPASSING BUFFER WHERE carrid = 'AA';
+
+-- CLIENT SPECIFIED (multi-client queries)
+SELECT * FROM t001 CLIENT SPECIFIED WHERE mandt IN ('100', '200');
+
+-- FOR UPDATE (locking)
+SELECT * FROM sflight WHERE carrid = 'AA' FOR UPDATE;
+
+-- PACKAGE SIZE (batch processing)
+SELECT * FROM ztransactions PACKAGE SIZE 1000;
+
+-- Tilde (~) operator for table aliases
+SELECT f~carrid, f~connid, p~cityfrom
+FROM sflight AS f
+INNER JOIN spfli AS p ON f~carrid = p~carrid AND f~connid = p~connid;
+
+-- Combined ABAP features
+SELECT carrid, connid, fldate
+FROM sflight
+WHERE carrid = 'AA'
+UP TO 50 ROWS
+BYPASSING BUFFER
+FOR UPDATE;
+```
+
 ## 🎯 Use Cases
 
 ### 1. Development
@@ -232,11 +282,21 @@ python test_negative.py             # Negative tests (21 tests) - error detectio
 ```
 
 **Test Coverage:**
-- ✅ 121 positive tests (valid SQL) - 100% pass rate
+- ✅ 157 positive tests (valid SQL) - Comprehensive coverage
+  - 14 Basic tests
+  - 69 Extended SQL variants
+  - 38 ABAP-specific tests
+  - 36 Enhanced ABAP features ⭐ NEW!
 - ✅ 21 negative tests (invalid SQL) - **100% detection rate** 🎯
 - ✅ All major SQL features covered
-- ✅ ABAP-specific syntax tested
+- ✅ Enhanced ABAP syntax fully tested
 - ✅ **Perfect error detection** across all test cases
+
+Run all tests:
+```bash
+python run_all_tests.py  # 178 total tests
+python test_abap_enhanced.py  # 36 enhanced ABAP feature tests
+```
 
 ## 📚 Documentation
 
@@ -251,6 +311,7 @@ python test_negative.py             # Negative tests (21 tests) - error detectio
 - `example_queries.sql` - Basic SQL examples
 - `example_queries_extended.sql` - All SQL variants
 - `example_abap_specific.sql` - ABAP-specific syntax
+- `example_queries_enhanced_abap.sql` - 🎉 Enhanced ABAP features (INTO, UP TO, etc.)
 - `example_queries_negative.sql` - Invalid SQL for error testing (60+ intentionally broken queries)
 
 ## 🏗️ Architecture

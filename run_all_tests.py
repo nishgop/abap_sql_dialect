@@ -19,6 +19,10 @@ from test_abap_specific import (
     TestABAPLimitOffset, TestABAPNullHandling, TestABAPDistinctVariants,
     TestABAPInOperator, TestABAPBetweenOperator, TestABAPLikeOperator
 )
+from test_abap_enhanced import (
+    TestABAPEnhancedKeywords, TestABAPStringOperators, TestABAPFunctions,
+    TestABAPHostVariables as TestABAPEnhancedHostVars, TestABAPTildeOperator
+)
 from test_negative import TestNegativeCases
 
 try:
@@ -142,13 +146,27 @@ def main():
     total_tests += count
     all_results.append(("ABAP-Specific", result3))
     
-    # 4. Negative Tests (Error Detection)
-    negative_tests = [TestNegativeCases]
-    result4 = run_test_suite("NEGATIVE (Error Detection)", negative_tests, verbosity=1)
-    success, count = print_summary("Negative", result4)
+    # 4. Enhanced ABAP Features (NEW!)
+    enhanced_abap_tests = [
+        TestABAPEnhancedKeywords,
+        TestABAPStringOperators,
+        TestABAPFunctions,
+        TestABAPEnhancedHostVars,
+        TestABAPTildeOperator
+    ]
+    result4 = run_test_suite("ABAP ENHANCED FEATURES", enhanced_abap_tests, verbosity=1)
+    success, count = print_summary("ABAP Enhanced", result4)
     total_success += success
     total_tests += count
-    all_results.append(("Negative", result4))
+    all_results.append(("ABAP Enhanced", result4))
+    
+    # 5. Negative Tests (Error Detection)
+    negative_tests = [TestNegativeCases]
+    result5 = run_test_suite("NEGATIVE (Error Detection)", negative_tests, verbosity=1)
+    success, count = print_summary("Negative", result5)
+    total_success += success
+    total_tests += count
+    all_results.append(("Negative", result5))
     
     # Overall Summary
     print_header("OVERALL TEST SUMMARY")
@@ -187,6 +205,16 @@ def main():
     print("    - IN Operator:     3 tests")
     print("    - BETWEEN:         3 tests")
     print("    - LIKE:            3 tests")
+    print("  ABAP Enhanced:      36 tests ⭐ NEW!")
+    print("    - INTO clauses:    4 tests")
+    print("    - UP TO/BYPASSING: 7 tests")
+    print("    - FOR UPDATE:      2 tests")
+    print("    - PACKAGE SIZE:    2 tests")
+    print("    - Combined:        2 tests")
+    print("    - String Ops:      8 tests")
+    print("    - Functions:       4 tests")
+    print("    - Host Vars:       4 tests")
+    print("    - Tilde (~):       3 tests")
     print("  Negative Tests:      21 tests (error detection)")
     print(f"\n  TOTAL:            {total_tests} tests")
     
@@ -206,6 +234,9 @@ def main():
     print("✓ CTEs: Simple, Multiple, Recursive-ready")
     print("✓ ABAP Keywords: SINGLE, UP TO, CLIENT SPECIFIED, BYPASSING BUFFER, FOR UPDATE")
     print("✓ ABAP Features: Host Variables, CASE, LIMIT/OFFSET, NULL handling")
+    print("✓ ABAP Enhanced: INTO, APPENDING TABLE, PACKAGE SIZE, Tilde (~) operator")
+    print("✓ ABAP String Ops: CP, CS, CA, CO, NP, NS, NA, CN (Contains Pattern, etc.)")
+    print("✓ ABAP Functions: CONCAT_WITH_SPACE, STRING_AGG, CAST, COALESCE")
     print("✓ Operators: IN, NOT IN, BETWEEN, LIKE, NOT LIKE")
     print("✓ Special: DISTINCT, COALESCE, NULLIF, Pattern Matching")
     

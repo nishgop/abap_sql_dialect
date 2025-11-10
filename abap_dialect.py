@@ -28,24 +28,36 @@ class ABAP(Postgres):
             **Postgres.Tokenizer.KEYWORDS,
             # ABAP-specific keywords for SELECT (using VAR for custom keywords)
             "SINGLE": TokenType.VAR,  # SELECT SINGLE
-            "APPENDING": TokenType.VAR,
-            "CORRESPONDING": TokenType.VAR,
-            "BYPASSING": TokenType.VAR,
+            "APPENDING": TokenType.VAR,  # APPENDING TABLE
+            "CORRESPONDING": TokenType.VAR,  # CORRESPONDING FIELDS OF
+            "BYPASSING": TokenType.VAR,  # BYPASSING BUFFER
             "BUFFER": TokenType.VAR,
-            "CLIENT": TokenType.VAR,
+            "CLIENT": TokenType.VAR,  # CLIENT SPECIFIED
             "SPECIFIED": TokenType.VAR,
-            "PACKAGE": TokenType.VAR,
+            "PACKAGE": TokenType.VAR,  # PACKAGE SIZE
             "SIZE": TokenType.VAR,
             # ABAP table operations
             "FIELDS": TokenType.VAR,
-            # Keep standard SQL keywords
-            "UP": TokenType.VAR,
+            # Additional keywords
+            "UP": TokenType.VAR,  # UP TO n ROWS
+            "ROWS": TokenType.ROWS,  # For UP TO n ROWS
+            # ABAP-specific string operators
+            "CP": TokenType.VAR,  # Contains Pattern
+            "NP": TokenType.VAR,  # Not contains Pattern
+            "CA": TokenType.VAR,  # Contains Any
+            "NA": TokenType.VAR,  # Not contains Any
+            "CS": TokenType.VAR,  # Contains String
+            "NS": TokenType.VAR,  # Not contains String
+            "CO": TokenType.VAR,  # Contains Only
+            "CN": TokenType.VAR,  # Not contains Only
         }
         
         # ABAP uses both @ for host variables (modern) and : for parameters
+        # Also supports ~ for field symbols and => for associations
         SINGLE_TOKENS = {
             **Postgres.Tokenizer.SINGLE_TOKENS,
             "@": TokenType.PARAMETER,  # Modern ABAP host variable syntax
+            "~": TokenType.TILDA,  # Tilde for field access (table~field)
         }
     
     class Parser(Postgres.Parser):
@@ -53,7 +65,12 @@ class ABAP(Postgres):
         
         FUNCTIONS = {
             **Postgres.Parser.FUNCTIONS,
-            # Add ABAP-specific functions if needed
+            # ABAP-specific string functions
+            "CONCAT_WITH_SPACE": lambda args: exp.Anonymous(this="CONCAT_WITH_SPACE", expressions=args),
+            # ABAP aggregate functions
+            "STRING_AGG": lambda args: exp.GroupConcat(this=args[0], separator=args[1] if len(args) > 1 else exp.Literal.string(",")),
+            # ABAP conversion functions
+            "CAST": lambda args: exp.Cast(this=args[0], to=args[1]) if len(args) > 1 else exp.Cast(this=args[0]),
         }
         
         def _parse_select(self, nested: bool = False, table: bool = False, **kwargs):
@@ -83,9 +100,31 @@ class ABAP(Postgres):
             return select
         
         def _parse_abap_specific_clauses(self, select):
-            """Parse ABAP-specific clauses like BYPASSING BUFFER."""
+            """
+            Parse ABAP-specific clauses.
+            
+            Supports:
+            - INTO @var, INTO TABLE @itab, APPENDING TABLE @itab
+            - UP TO n ROWS
+            - BYPASSING BUFFER
+            - CLIENT SPECIFIED  
+            - FOR UPDATE
+            - PACKAGE SIZE n
+            """
             if not select:
                 return
+            
+            # Check for "INTO" clause (must come before other clauses)
+            if self._match(TokenType.INTO):
+                into_expr = self._parse_into_clause()
+                if into_expr:
+                    select.set("into", into_expr)
+            
+            # Check for "APPENDING TABLE"
+            if self._match_text_seq("APPENDING"):
+                if self._match(TokenType.TABLE):
+                    table_var = self._parse_field()
+                    select.set("appending_table", table_var)
             
             # Check for "UP TO n ROWS"
             if self._match_text_seq("UP", "TO"):
@@ -101,7 +140,46 @@ class ABAP(Postgres):
             if self._match_text_seq("CLIENT", "SPECIFIED"):
                 select.set("client_specified", True)
             
+            # Check for "FOR UPDATE"
+            if self._match_text_seq("FOR"):
+                if self._match(TokenType.UPDATE):
+                    select.set("for_update", True)
+            
+            # Check for "PACKAGE SIZE"
+            if self._match_text_seq("PACKAGE", "SIZE"):
+                size = self._parse_number()
+                select.set("package_size", size.this if size else None)
+            
             return select
+        
+        def _parse_into_clause(self):
+            """
+            Parse INTO clause variations:
+            - INTO @var
+            - INTO TABLE @itab
+            - INTO CORRESPONDING FIELDS OF @var
+            """
+            # Check for "TABLE" keyword
+            is_table = self._match(TokenType.TABLE)
+            
+            # Check for "CORRESPONDING FIELDS OF"
+            is_corresponding = False
+            if self._match_text_seq("CORRESPONDING", "FIELDS"):
+                if self._match_text_seq("OF"):
+                    is_corresponding = True
+            
+            # Parse the target variable
+            target = self._parse_field()
+            
+            if target:
+                into_dict = {"target": target}
+                if is_table:
+                    into_dict["type"] = "table"
+                if is_corresponding:
+                    into_dict["corresponding"] = True
+                return into_dict
+            
+            return None
     
     class Generator(Postgres.Generator):
         """ABAP SQL Generator for converting AST back to ABAP SQL."""
@@ -110,28 +188,119 @@ class ABAP(Postgres):
             """
             Generate ABAP SQL SELECT statement.
             
-            Handles ABAP-specific keywords like SINGLE, UP TO n ROWS.
+            Handles ABAP-specific keywords:
+            - SINGLE
+            - INTO clauses
+            - UP TO n ROWS
+            - BYPASSING BUFFER
+            - CLIENT SPECIFIED
+            - FOR UPDATE
+            - PACKAGE SIZE
             """
-            # Get standard SELECT
-            sql = super().select_sql(expression)
+            # Start with SELECT keyword
+            sql_parts = ["SELECT"]
             
-            # Add ABAP-specific keywords
+            # Add SINGLE if present
             if expression.args.get("single"):
-                sql = sql.replace("SELECT", "SELECT SINGLE", 1)
+                sql_parts.append("SINGLE")
             
-            # Note: UP TO and BYPASSING BUFFER would need more complex handling
-            # as they appear in different positions in the statement
+            # Add DISTINCT if present
+            if expression.args.get("distinct"):
+                sql_parts.append("DISTINCT")
             
-            return sql
+            # Add select expressions
+            expressions = expression.expressions
+            if expressions:
+                sql_parts.append(", ".join([self.sql(e) for e in expressions]))
+            
+            # Add INTO clause if present
+            into = expression.args.get("into")
+            if into:
+                into_sql = self._generate_into_clause(into)
+                sql_parts.append(into_sql)
+            
+            # Add APPENDING TABLE if present
+            appending = expression.args.get("appending_table")
+            if appending:
+                sql_parts.append(f"APPENDING TABLE {self.sql(appending)}")
+            
+            # Add FROM clause
+            from_clause = expression.args.get("from")
+            if from_clause:
+                sql_parts.append(f"FROM {self.sql(from_clause)}")
+            
+            # Add JOIN clauses
+            joins = expression.args.get("joins")
+            if joins:
+                for join in joins:
+                    sql_parts.append(self.sql(join))
+            
+            # Add WHERE clause
+            where = expression.args.get("where")
+            if where:
+                sql_parts.append(f"WHERE {self.sql(where.this)}")
+            
+            # Add GROUP BY
+            group = expression.args.get("group")
+            if group:
+                sql_parts.append(self.sql(group))
+            
+            # Add HAVING
+            having = expression.args.get("having")
+            if having:
+                sql_parts.append(f"HAVING {self.sql(having.this)}")
+            
+            # Add ORDER BY
+            order = expression.args.get("order")
+            if order:
+                sql_parts.append(self.sql(order))
+            
+            # Add UP TO n ROWS
+            up_to_rows = expression.args.get("up_to_rows")
+            if up_to_rows:
+                sql_parts.append(f"UP TO {up_to_rows} ROWS")
+            
+            # Add BYPASSING BUFFER
+            if expression.args.get("bypassing_buffer"):
+                sql_parts.append("BYPASSING BUFFER")
+            
+            # Add CLIENT SPECIFIED
+            if expression.args.get("client_specified"):
+                sql_parts.append("CLIENT SPECIFIED")
+            
+            # Add FOR UPDATE
+            if expression.args.get("for_update"):
+                sql_parts.append("FOR UPDATE")
+            
+            # Add PACKAGE SIZE
+            package_size = expression.args.get("package_size")
+            if package_size:
+                sql_parts.append(f"PACKAGE SIZE {package_size}")
+            
+            return " ".join(sql_parts)
+        
+        def _generate_into_clause(self, into_dict):
+            """Generate INTO clause from parsed dictionary."""
+            parts = ["INTO"]
+            
+            if into_dict.get("type") == "table":
+                parts.append("TABLE")
+            
+            if into_dict.get("corresponding"):
+                parts.append("CORRESPONDING FIELDS OF")
+            
+            target = into_dict.get("target")
+            if target:
+                parts.append(self.sql(target))
+            
+            return " ".join(parts)
         
         def limit_sql(self, expression: exp.Limit) -> str:
             """
             Override LIMIT to support ABAP's 'UP TO n ROWS' syntax.
             """
-            # Can generate either standard LIMIT or ABAP's UP TO n ROWS
-            if self.dialect == "abap":
-                return f"UP TO {self.sql(expression, 'expression')} ROWS"
-            return super().limit_sql(expression)
+            # For ABAP, use UP TO n ROWS instead of LIMIT
+            return f"UP TO {self.sql(expression, 'expression')} ROWS"
 
 
 # Convenience function to parse ABAP SQL

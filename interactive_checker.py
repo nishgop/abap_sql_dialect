@@ -37,19 +37,24 @@ def print_menu():
     print()
 
 
-def get_multiline_input(prompt: str = "Enter SQL (end with ';' on a new line):\n") -> str:
+def get_multiline_input(prompt: str = "Enter SQL (end with empty line or ';'):\n") -> str:
     """Get multiline SQL input from user."""
     print(prompt)
     lines = []
     while True:
         try:
             line = input()
-            if line.strip() == ';':
+            # End on empty line or line with just ';'
+            if line.strip() == '' or line.strip() == ';':
                 break
             lines.append(line)
         except EOFError:
             break
-    return '\n'.join(lines)
+    
+    sql = '\n'.join(lines)
+    # Remove trailing semicolon if present (we'll add it back if needed)
+    sql = sql.rstrip(';').strip()
+    return sql
 
 
 def check_sql_interactive(checker: ABAPSQLChecker):
@@ -65,7 +70,7 @@ def check_sql_interactive(checker: ABAPSQLChecker):
 
 def format_sql_interactive(checker: ABAPSQLChecker):
     """Interactive SQL formatting."""
-    sql = get_multiline_input("Enter SQL to format (end with ';' on a new line):\n")
+    sql = get_multiline_input("Enter SQL to format (end with empty line or ';'):\n")
     if not sql.strip():
         print_colored("No SQL provided.", Fore.YELLOW if COLORAMA_AVAILABLE else "")
         return
@@ -147,7 +152,9 @@ SUPPORTED SQL TYPES:
 - CASE expressions
 
 TIPS:
-- End multi-line input with a single ';' on a new line
+- Enter your SQL, then press Enter twice (empty line) to submit
+- Or enter ';' on a new line to submit
+- For single-line SQL, just type it and press Enter twice
 - For file input, separate multiple statements with semicolons
 - The checker validates syntax but not database schema
 

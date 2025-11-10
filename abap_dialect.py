@@ -73,6 +73,27 @@ class ABAP(Postgres):
             "CAST": lambda args: exp.Cast(this=args[0], to=args[1]) if len(args) > 1 else exp.Cast(this=args[0]),
         }
         
+        def _parse_term(self):
+            """Override to handle ABAP string comparison operators at term level."""
+            # Parse left side using standard term parsing
+            this = super()._parse_term()
+            
+            # Check if next token is an ABAP string operator
+            if self._curr and self._curr.text and self._curr.text.upper() in ("CP", "NP", "CS", "NS", "CA", "NA", "CO", "CN"):
+                op_text = self._curr.text.upper()
+                self._advance()  # Consume the operator token
+                
+                # Parse right side
+                right = super()._parse_term()
+                
+                # Map to LIKE/NOT LIKE (closest SQL equivalent)
+                if op_text.startswith("N"):  # Negated operators (NP, NS, NA, CN)
+                    return self.expression(exp.Not, this=self.expression(exp.Like, this=this, expression=right))
+                else:  # Positive operators (CP, CS, CA, CO)
+                    return self.expression(exp.Like, this=this, expression=right)
+            
+            return this
+        
         def _parse_select(self, nested: bool = False, table: bool = False, **kwargs):
             """
             Override SELECT parsing to handle ABAP-specific keywords.
@@ -83,19 +104,54 @@ class ABAP(Postgres):
             - UP TO n ROWS
             - FOR UPDATE
             - BYPASSING BUFFER
+            - CLIENT SPECIFIED
+            - PACKAGE SIZE
             """
             # Check for SINGLE keyword (it's tokenized as VAR)
             single = self._match_text_seq("SINGLE")
             
             # Continue with standard SELECT parsing
+            # This will parse: SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ... LIMIT
             select = super()._parse_select(nested=nested, table=table, **kwargs)
             
             # Mark if this is a SINGLE select (store in metadata)
             if single and select:
                 select.set("single", True)
             
-            # Parse ABAP-specific clauses after standard clauses
-            self._parse_abap_specific_clauses(select)
+            # NOW parse ABAP-specific clauses that come after standard SQL clauses
+            # These are at the end: UP TO, BYPASSING BUFFER, CLIENT SPECIFIED, FOR UPDATE, PACKAGE SIZE
+            if select:
+                # Try to parse each ABAP clause (order matters!)
+                
+                # UP TO n ROWS (like LIMIT but ABAP-specific)
+                if self._match_text_seq("UP"):
+                    if self._match_text_seq("TO"):
+                        if self._match(TokenType.NUMBER):
+                            rows_value = self._prev.text
+                            if self._match(TokenType.ROWS):
+                                select.set("up_to_rows", rows_value)
+                
+                # BYPASSING BUFFER
+                if self._match_text_seq("BYPASSING"):
+                    if self._match_text_seq("BUFFER"):
+                        select.set("bypassing_buffer", True)
+                
+                # CLIENT SPECIFIED
+                if self._match_text_seq("CLIENT"):
+                    if self._match_text_seq("SPECIFIED"):
+                        select.set("client_specified", True)
+                
+                # FOR UPDATE
+                if self._match_text_seq("FOR"):
+                    if self._match(TokenType.UPDATE):
+                        select.set("for_update", True)
+                
+                # PACKAGE SIZE n
+                if self._match_text_seq("PACKAGE"):
+                    if self._match_text_seq("SIZE"):
+                        if self._match(TokenType.NUMBER):
+                            size_value = self._prev.text
+                            select.set("package_size", size_value)
             
             return select
         

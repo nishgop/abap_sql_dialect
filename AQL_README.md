@@ -18,6 +18,16 @@ A comprehensive **Ariba Query Language (AQL) SQL Dialect** implementation using 
 - **UNION** and UNION ALL operations
 - **DISTINCT** and TOP N queries
 
+### ✅ Production Ariba AQL Support **NEW!** 🎉
+- **Pre-processing** for Ariba-proprietary syntax
+- **INCLUDE INACTIVE** clause handling
+- **SUBCLASS NONE** clause handling
+- **Multi-level table names** (e.g., `ariba.sourcing.rfx.RFXDocument`)
+- **BaseId(:PARAM)** function support
+- **Nested field access** (e.g., `Document.ParentWorkspace.ProjectAddin`)
+- **Parameter syntax** (`:PARAM`, `:NUM`, `:BOOLEAN`, `:NULL`)
+- All production Ariba queries validated successfully
+
 ### ✅ AQL-Specific Features
 - 📦 **Ariba Object References** - Document, Project, Supplier, Invoice, Contract, Requisition, Order
 - 🔗 **Dot Notation** - Document.DocumentId, Project.ProjectName, etc.
@@ -66,16 +76,49 @@ from aql_sql_checker import AQLSQLChecker
 # Initialize checker
 checker = AQLSQLChecker()
 
-# Check syntax
+# Check standard AQL
 sql = "SELECT Document.DocumentId, Document.Title FROM Document WHERE Document.Status = 'Active'"
 is_valid, ast, errors = checker.check_syntax(sql)
 
+# Check production Ariba AQL (with pre-processing enabled by default)
+ariba_sql = """
+SELECT cr FROM ariba.sourcing.rfx.RFXDocument AS cr INCLUDE INACTIVE 
+WHERE cr IN (BaseId(:PARAM), BaseId(:PARAM))
+"""
+is_valid, ast, errors = checker.check_syntax(ariba_sql)  # Pre-processing enabled by default
+
 if is_valid:
-    print("✅ Valid AQL SQL!")
+    print("✅ Valid AQL!")
 else:
     print("❌ Errors found:")
     for error in errors:
         print(f"  - {error}")
+```
+
+### Production Ariba AQL
+
+The checker now handles **real production Ariba queries** with proprietary syntax:
+
+```python
+# This query has INCLUDE INACTIVE and BaseId() - both work now!
+real_ariba_query = """
+SELECT RFXBid FROM ariba.sourcing.rfx.RFXBid AS RFXBid SUBCLASS NONE 
+WHERE RFXBid.ContentDocumentReference.DocumentId = BaseId(:PARAM) 
+AND RFXBid.ContentDocumentReference.DocumentVersion = :NUM
+ORDER BY RFXBid.SubmissionDate DESC
+"""
+
+is_valid, ast, errors = checker.check_syntax(real_ariba_query)
+print(f"Valid: {is_valid}")  # ✅ True!
+```
+
+### Disable Pre-processing (Optional)
+
+If you want to check strict SQL without Ariba extensions:
+
+```python
+is_valid, ast, errors = checker.check_syntax(sql, preprocess=False)
+```
 
 # Analyze query
 analysis = checker.analyze_query(sql)
@@ -103,6 +146,31 @@ Provides an interactive CLI for checking AQL queries:
 ---
 
 ## 📚 Example Queries
+
+### Production Ariba AQL **NEW!** 🎉
+
+Real production queries that now work with pre-processing:
+
+```sql
+-- INCLUDE INACTIVE clause
+SELECT cr FROM ariba.sourcing.rfx.RFXDocument AS cr INCLUDE INACTIVE 
+WHERE cr IN (BaseId(:PARAM), BaseId(:PARAM));
+
+-- SUBCLASS NONE clause
+SELECT RFXBid FROM ariba.sourcing.rfx.RFXBid AS RFXBid SUBCLASS NONE 
+WHERE RFXBid.ContentDocumentReference.DocumentId = BaseId(:PARAM);
+
+-- Multi-level table names with quoted identifiers
+SELECT g FROM ariba."user".core."Group" AS g 
+WHERE g.Users = BaseId(:PARAM) AND g.IsGlobal = :BOOLEAN;
+
+-- Complex nested field access
+SELECT RFXDocument.ParentWorkspace.ProjectAddin.WorkspaceType 
+FROM ariba.sourcing.rfx.RFXDocument AS RFXDocument;
+
+-- Parameter syntax (:PARAM, :NUM, :BOOLEAN, :NULL)
+SELECT * FROM Document WHERE Status = :PARAM AND Version = :NUM;
+```
 
 ### Basic SELECT
 ```sql

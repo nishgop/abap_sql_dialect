@@ -1,13 +1,21 @@
-# ABAP SQL Syntax Checker
+# SQL Dialect Suite: ABAP & AQL
 
-A comprehensive Python-based ABAP SQL syntax checker built using [SQLGlot](https://sqlglot.com/sqlglot.html) with a custom ABAP dialect. This tool validates, analyzes, and formats ABAP SQL statements with proper support for ABAP-specific keywords and syntax.
+A comprehensive Python-based SQL syntax checker suite built using [SQLGlot](https://sqlglot.com/sqlglot.html) with custom dialects for **ABAP SQL** and **AQL (Ariba Query Language)**. This toolkit validates, analyzes, and formats SQL statements with proper support for dialect-specific keywords and syntax.
+
+## 🎯 Supported Dialects
+
+### 1. ABAP SQL Dialect
+Complete ABAP SQL support with custom keywords, host variables, and ABAP-specific syntax validation.
+
+### 2. AQL (Ariba Query Language) Dialect **NEW!** 🎉
+Full support for SAP Ariba's query language including object references, dot notation, and Ariba-specific functions.
 
 ## 🌟 Key Features
 
-### Core Capabilities
+### Core Capabilities (Both Dialects)
 - ✅ **Syntax Validation** - Detect and report SQL syntax errors
 - ✅ **Semantic Validation** - Advanced error detection (missing FROM, invalid JOINs, etc.)
-- ✅ **ABAP Dialect** - Custom dialect with ABAP-specific keyword support
+- ✅ **Custom Dialects** - ABAP and AQL with dialect-specific keyword support
 - ✅ **Query Analysis** - Extract detailed information (tables, columns, clauses)
 - ✅ **SQL Formatting** - Pretty-print and format SQL statements
 - ✅ **Performance Warnings** - Identify potential issues and best practices
@@ -32,7 +40,16 @@ A comprehensive Python-based ABAP SQL syntax checker built using [SQLGlot](https
 - ✅ **ABAP String Operators** - CP, CS, CA, CO, NP, NS, NA, CN
 - ✅ **ABAP Functions** - CONCAT_WITH_SPACE, STRING_AGG, CAST
 
-### SQL Variants Supported
+### AQL-Specific Support **NEW!** 🎉
+- ✅ **Ariba Object References** - Document, Project, Supplier, Invoice, Contract, Requisition, Order
+- ✅ **Dot Notation** - Document.DocumentId, Project.ProjectName, Supplier.Name, etc.
+- ✅ **AQL Date/Time Functions** - FORMATDATE, FORMATTIMESTAMP, ADDDAYS, ADDMONTHS, DATEDIFF, GETDATE
+- ✅ **AQL String Functions** - STRINGCONCAT, SUBSTRING, CHARINDEX, LEN, REPLACE, TRIM
+- ✅ **AQL Math Functions** - ROUND, CEILING, FLOOR, ABS, POWER, SQRT
+- ✅ **AQL Conditional Functions** - IIF, ISNULL, NULLIF
+- ✅ **Complex Queries** - Multiple JOINs with aggregates, CASE expressions, subqueries
+
+### SQL Variants Supported (Both Dialects)
 - ✅ All JOIN types (INNER, LEFT, RIGHT, FULL OUTER, CROSS)
 - ✅ Window functions (ROW_NUMBER, RANK, LAG, LEAD, etc.)
 - ✅ Aggregate functions (COUNT, SUM, AVG, MIN, MAX)
@@ -69,18 +86,43 @@ pip install -r requirements.txt
 
 ## 🚀 Quick Start
 
-### Command Line Demo
+### ABAP SQL
+
+#### Command Line Demo
 
 ```bash
-# Run the demo with example queries
+# Run the ABAP demo with example queries
 python abap_sql_checker.py
 ```
 
-### Interactive Mode
+#### Interactive Mode
 
 ```bash
-# Launch interactive CLI
+# Launch ABAP interactive CLI
 python interactive_checker.py
+```
+
+### AQL (Ariba Query Language) **NEW!**
+
+#### Command Line Demo
+
+```bash
+# Run the AQL demo with example queries
+python aql_sql_checker.py
+```
+
+#### Interactive Mode
+
+```bash
+# Launch AQL interactive CLI
+python interactive_aql_checker.py
+```
+
+### Unified Testing
+
+```bash
+# Run all tests for both ABAP and AQL
+python run_unified_tests.py
 ```
 
 ### Batch Validation
@@ -98,7 +140,9 @@ python batch_validator.py queries.sql --json
 
 ## 💻 Python API Usage
 
-### Basic Syntax Checking
+### ABAP SQL
+
+#### Basic Syntax Checking
 
 ```python
 from abap_sql_checker import ABAPSQLChecker
@@ -116,7 +160,7 @@ else:
     print("✗ Errors:", errors)
 ```
 
-### Full Query Analysis
+#### Full Query Analysis
 
 ```python
 # Get detailed analysis
@@ -136,7 +180,7 @@ if 'abap_features' in analysis:
     print(f"UP TO ROWS: {abap['up_to_rows']}")
 ```
 
-### Format SQL
+#### Format SQL
 
 ```python
 # Pretty-print SQL
@@ -144,7 +188,7 @@ formatted = checker.format_sql(sql, pretty=True)
 print(formatted)
 ```
 
-### Using ABAP Dialect Directly
+#### Using ABAP Dialect Directly
 
 ```python
 from abap_dialect import parse_abap_sql, format_abap_sql
@@ -155,6 +199,61 @@ print(f"Is SINGLE query: {ast.args.get('single')}")  # True
 
 # Format as ABAP SQL
 formatted = format_abap_sql(sql, pretty=True)
+```
+
+### AQL (Ariba Query Language) **NEW!**
+
+#### Basic Syntax Checking
+
+```python
+from aql_sql_checker import AQLSQLChecker
+
+# Create checker instance
+checker = AQLSQLChecker()
+
+# Check an AQL statement
+sql = "SELECT Document.DocumentId, Document.Title FROM Document WHERE Document.Status = 'Active'"
+is_valid, ast, errors = checker.check_syntax(sql)
+
+if is_valid:
+    print("✓ Valid AQL")
+else:
+    print("✗ Errors:", errors)
+```
+
+#### Full Query Analysis
+
+```python
+# Get detailed analysis
+analysis = checker.analyze_query(sql)
+
+print(f"Valid: {analysis['is_valid']}")
+print(f"Statement Type: {analysis['statement_type']}")
+print(f"Tables: {analysis['tables']}")
+print(f"Columns: {analysis['columns']}")
+print(f"Functions: {analysis['functions']}")
+print(f"Clauses: {analysis['clauses']}")
+```
+
+#### Format AQL
+
+```python
+# Pretty-print AQL
+formatted = checker.format_sql(sql, pretty=True)
+print(formatted)
+```
+
+#### Using AQL Dialect Directly
+
+```python
+from aql_dialect import parse_aql, AQL
+
+# Parse with AQL dialect
+ast = parse_aql("SELECT Document.DocumentId FROM Document")
+print(f"Statement type: {ast.__class__.__name__}")  # Select
+
+# Format as AQL
+formatted = ast.sql(dialect='postgres', pretty=True)
 ```
 
 ## 📊 Example Queries
@@ -237,6 +336,65 @@ BYPASSING BUFFER
 FOR UPDATE;
 ```
 
+### AQL (Ariba Query Language) Examples **NEW!** 🎉
+
+```sql
+-- Basic AQL with dot notation
+SELECT Document.DocumentId, Document.Title, Document.Amount
+FROM Document
+WHERE Document.Status = 'Active'
+ORDER BY Document.Amount DESC;
+
+-- AQL with JOIN and aggregates
+SELECT 
+    s.Name,
+    COUNT(i.InvoiceId) as InvoiceCount,
+    SUM(i.Amount) as TotalAmount
+FROM Supplier s
+LEFT JOIN Invoice i ON s.SupplierId = i.SupplierId
+GROUP BY s.Name
+HAVING SUM(i.Amount) > 10000;
+
+-- AQL Date Functions
+SELECT 
+    Document.DocumentId,
+    FORMATDATE(Document.CreatedDate, 'yyyy-MM-dd') as FormattedDate,
+    ADDDAYS(Document.CreatedDate, 30) as DueDate,
+    DATEDIFF('day', Document.CreatedDate, GETDATE()) as DaysOld
+FROM Document;
+
+-- AQL String Functions
+SELECT 
+    STRINGCONCAT(Supplier.FirstName, ' ', Supplier.LastName) as FullName,
+    SUBSTRING(Supplier.Name, 1, 50) as ShortName,
+    LEN(Supplier.Description) as DescLength
+FROM Supplier;
+
+-- AQL with CASE expression
+SELECT 
+    Project.ProjectName,
+    COUNT(DISTINCT Document.DocumentId) as DocCount,
+    SUM(CASE 
+        WHEN Document.Status = 'Completed' THEN Document.Amount 
+        ELSE 0 
+    END) as CompletedAmount
+FROM Project
+INNER JOIN Document ON Project.ProjectId = Document.ProjectId
+WHERE Project.Status = 'Active'
+GROUP BY Project.ProjectName
+HAVING COUNT(*) > 5
+ORDER BY CompletedAmount DESC;
+
+-- AQL Math Functions
+SELECT 
+    Invoice.InvoiceId,
+    ROUND(Invoice.Amount, 2) as RoundedAmount,
+    CEILING(Invoice.Amount) as CeilingAmount,
+    FLOOR(Invoice.Amount) as FloorAmount,
+    ABS(Invoice.Discount) as AbsoluteDiscount
+FROM Invoice;
+```
+
 ## 🎯 Use Cases
 
 ### 1. Development
@@ -265,53 +423,113 @@ FOR UPDATE;
 
 ## 🧪 Testing
 
-### Run All Tests
+### Run All Tests (Both Dialects)
 
 ```bash
-# Comprehensive test suite (121 tests)
+# Comprehensive unified test suite (ABAP + AQL: 288 tests)
+python run_unified_tests.py
+```
+
+### Run ABAP Tests Only
+
+```bash
+# All ABAP tests (178 tests)
 python run_all_tests.py
-```
 
-### Run Individual Test Suites
-
-```bash
-python test_checker.py              # Basic tests (14 tests)
-python test_checker_extended.py     # SQL variants (69 tests)
+# Individual ABAP test suites
+python test_basic.py                # Basic ABAP tests (14 tests)
+python test_extended.py             # SQL variants (69 tests)
 python test_abap_specific.py        # ABAP features (38 tests)
-python test_negative.py             # Negative tests (21 tests) - error detection
+python test_abap_enhanced.py        # Enhanced ABAP (36 tests)
+python test_negative.py             # Error detection (21 tests)
 ```
 
-**Test Coverage:**
-- ✅ 157 positive tests (valid SQL) - Comprehensive coverage
-  - 14 Basic tests
-  - 69 Extended SQL variants
-  - 38 ABAP-specific tests
-  - 36 Enhanced ABAP features ⭐ NEW!
-- ✅ 21 negative tests (invalid SQL) - **100% detection rate** 🎯
-- ✅ All major SQL features covered
-- ✅ Enhanced ABAP syntax fully tested
-- ✅ **Perfect error detection** across all test cases
+### Run AQL Tests Only
 
-Run all tests:
 ```bash
-python run_all_tests.py  # 178 total tests
-python test_abap_enhanced.py  # 36 enhanced ABAP feature tests
+# All AQL tests (110 tests)
+python -m unittest discover -s . -p "test_aql_*.py" -v
+
+# Individual AQL test suites
+python test_aql_basic.py            # Basic AQL tests (14 tests)
+python test_aql_extended.py         # Extended features (55 tests)
+python test_aql_specific.py         # AQL-specific (20 tests)
+python test_aql_negative.py         # Error detection (21 tests)
 ```
 
-## 📚 Documentation
+### Test Coverage Summary
 
-| Document | Description |
-|----------|-------------|
-| **README.md** | Main documentation (you are here) |
-| **QUICKSTART.md** | 5-minute quick start guide |
-| **ABAP_DIALECT_GUIDE.md** | Technical reference for custom dialect |
+| Dialect | Test Suites | Total Tests | Coverage |
+|---------|-------------|-------------|----------|
+| **ABAP SQL** | 5 suites | 178 tests | Complete ABAP SQL + enhanced features |
+| **AQL** | 4 suites | 110 tests | Complete AQL + Ariba features |
+| **Combined** | 9 suites | **288 tests** | Full dialect coverage |
+
+**Test Coverage Details:**
+- ✅ **ABAP**: 157 positive + 21 negative tests (100% error detection)
+- ✅ **AQL**: 89 positive + 21 negative tests (comprehensive validation)
+- ✅ All major SQL constructs (SELECT, INSERT, UPDATE, DELETE, JOINs, subqueries)
+- ✅ Dialect-specific features (ABAP keywords, AQL objects, functions)
+- ✅ Error detection and semantic validation
+
+## 📁 Project Structure
+
+```
+abap_sql_dialect/
+├── ABAP SQL Dialect
+│   ├── abap_dialect.py            # Custom ABAP dialect implementation
+│   ├── abap_sql_checker.py        # ABAP syntax checker and validator
+│   ├── interactive_checker.py     # ABAP interactive CLI
+│   ├── test_basic.py             # Basic ABAP tests
+│   ├── test_extended.py          # Extended SQL tests
+│   ├── test_abap_specific.py     # ABAP-specific tests
+│   ├── test_abap_enhanced.py     # Enhanced ABAP features
+│   ├── test_negative.py          # Error detection tests
+│   ├── run_all_tests.py          # ABAP test runner
+│   └── example_queries*.sql      # ABAP example queries
+│
+├── AQL (Ariba Query Language) Dialect **NEW!**
+│   ├── aql_dialect.py            # Custom AQL dialect implementation
+│   ├── aql_sql_checker.py        # AQL syntax checker and validator
+│   ├── interactive_aql_checker.py # AQL interactive CLI
+│   ├── test_aql_basic.py         # Basic AQL tests
+│   ├── test_aql_extended.py      # Extended AQL tests
+│   ├── test_aql_specific.py      # AQL-specific tests
+│   ├── test_aql_negative.py      # Error detection tests
+│   ├── example_queries_aql.sql   # AQL example queries (578 lines)
+│   └── AQL_README.md             # AQL-specific documentation
+│
+├── Unified Testing
+│   └── run_unified_tests.py      # Run all tests for both dialects
+│
+├── Documentation
+│   ├── README.md                 # This file (main documentation)
+│   ├── QUICKSTART.md             # Quick start guide
+│   └── ABAP_DIALECT_GUIDE.md     # ABAP dialect technical guide
+│
+└── Utilities
+    ├── batch_validator.py        # Batch validation tool
+    └── setup.sh                  # Setup script
+```
+
+## 📖 Documentation
+
+- **[README.md](README.md)** - This file (overview of both dialects)
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick start guide for both ABAP and AQL
+- **[ABAP_DIALECT_GUIDE.md](ABAP_DIALECT_GUIDE.md)** - Technical guide for ABAP dialect
+- **[AQL_README.md](AQL_README.md)** - Complete AQL documentation
 
 ### Example SQL Files
-- `example_queries.sql` - Basic examples (15 queries)
+
+**ABAP Examples:**
+- `example_queries.sql` - Basic ABAP examples (15 queries)
 - `example_queries_extended.sql` - All SQL variants (85 queries)
 - `example_abap_specific.sql` - ABAP-specific syntax (50 queries)
 - `example_queries_enhanced_abap.sql` - Enhanced ABAP features (60 queries)
 - `example_queries_negative.sql` - Error detection tests (60 queries)
+
+**AQL Examples:**
+- `example_queries_aql.sql` - Complete AQL examples (400+ lines, 17 categories)
 
 ## 🏗️ Architecture
 

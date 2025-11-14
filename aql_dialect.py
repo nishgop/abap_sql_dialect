@@ -52,7 +52,13 @@ class AQL(Dialect):
         
         KEYWORDS = {
             **Postgres.Tokenizer.KEYWORDS,
-            # AQL-specific keywords
+            # Ariba-specific keywords
+            "INCLUDE": TokenType.VAR,
+            "INACTIVE": TokenType.VAR,
+            "SUBCLASS": TokenType.VAR,
+            "BASEID": TokenType.VAR,
+            
+            # AQL-specific date/time functions
             "FORMATDATE": TokenType.VAR,
             "FORMATTIMESTAMP": TokenType.VAR,
             "ADDDAYS": TokenType.VAR,
@@ -95,7 +101,7 @@ class AQL(Dialect):
             "ISNULL": TokenType.VAR,
             "NULLIF": TokenType.VAR,
             
-            # Ariba-specific
+            # Ariba object types
             "DOCUMENT": TokenType.VAR,
             "PROJECT": TokenType.VAR,
             "SUPPLIER": TokenType.VAR,
@@ -110,6 +116,9 @@ class AQL(Dialect):
         
         FUNCTIONS = {
             **Postgres.Parser.FUNCTIONS,
+            # Ariba-specific functions
+            "BASEID": lambda args: exp.Anonymous(this="BaseId", expressions=args),
+            
             # Date/Time functions
             "FORMATDATE": lambda args: exp.Anonymous(this="FORMATDATE", expressions=args),
             "FORMATTIMESTAMP": lambda args: exp.Anonymous(this="FORMATTIMESTAMP", expressions=args),
@@ -153,24 +162,6 @@ class AQL(Dialect):
             "ISNULL": lambda args: exp.Coalesce(this=args[0], expressions=[args[1]] if len(args) > 1 else []),
             "NULLIF": lambda args: exp.NullIf(this=args[0], expression=args[1] if len(args) > 1 else None),
         }
-        
-        def _parse_table_parts(self, schema: bool = False):
-            """
-            Override to handle AQL's dot notation for nested objects.
-            Handles: Document.DocumentId, Project.Name, etc.
-            """
-            table = super()._parse_table_parts(schema=schema)
-            
-            # Handle AQL's nested field references
-            if table and isinstance(table, exp.Table):
-                # Check if this looks like an AQL object reference
-                table_name = str(table.this).upper()
-                if table_name in ('DOCUMENT', 'PROJECT', 'SUPPLIER', 'CONTRACT', 
-                                 'INVOICE', 'REQUISITION', 'ORDER'):
-                    # Mark this as an AQL object reference
-                    table.set("is_aql_object", True)
-            
-            return table
     
     class Generator(Postgres.Generator):
         """Custom SQL generator for AQL-specific syntax."""

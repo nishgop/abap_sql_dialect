@@ -21,6 +21,41 @@ from sqlglot import exp, parse_one, ParseError
 from aql_dialect import AQL, parse_aql
 
 
+def preprocess_ariba_aql(sql: str) -> str:
+    """
+    Pre-process Ariba AQL to remove proprietary syntax that SQLGlot cannot parse.
+    
+    This function strips Ariba-specific clauses while preserving the query logic:
+    - INCLUDE INACTIVE - Ariba clause for including inactive records
+    - SUBCLASS NONE - Ariba inheritance control clause
+    - Normalizes whitespace
+    
+    Args:
+        sql: Raw Ariba AQL query string
+        
+    Returns:
+        Cleaned SQL that can be parsed by standard Postgres parser
+        
+    Example:
+        >>> sql = "SELECT cr FROM ariba.rfx.Document AS cr INCLUDE INACTIVE"
+        >>> preprocess_ariba_aql(sql)
+        "SELECT cr FROM ariba.rfx.Document AS cr"
+    """
+    # Remove INCLUDE INACTIVE (case-insensitive)
+    sql = re.sub(r'\s+INCLUDE\s+INACTIVE\b', '', sql, flags=re.IGNORECASE)
+    
+    # Remove SUBCLASS NONE (case-insensitive)
+    sql = re.sub(r'\s+SUBCLASS\s+NONE\b', '', sql, flags=re.IGNORECASE)
+    
+    # Remove SUBCLASS <identifier> (case-insensitive)
+    sql = re.sub(r'\s+SUBCLASS\s+\w+\b', '', sql, flags=re.IGNORECASE)
+    
+    # Normalize whitespace
+    sql = ' '.join(sql.split())
+    
+    return sql
+
+
 def print_analysis(analysis: Dict) -> None:
     """
     Pretty-print analysis results.
@@ -87,19 +122,25 @@ class AQLSQLChecker:
         self.errors: List[Dict] = []
         self.warnings: List[Dict] = []
     
-    def check_syntax(self, sql: str) -> Tuple[bool, Optional[exp.Expression], List[str]]:
+    def check_syntax(self, sql: str, preprocess: bool = True) -> Tuple[bool, Optional[exp.Expression], List[str]]:
         """
         Check SQL syntax and validate the query.
         
         Args:
             sql: AQL SQL statement to check
+            preprocess: Whether to apply Ariba-specific pre-processing (default: True)
             
         Returns:
             Tuple of (is_valid, ast, errors)
         """
         errors = []
+        original_sql = sql
         
         try:
+            # Pre-process Ariba-specific syntax if enabled
+            if preprocess:
+                sql = preprocess_ariba_aql(sql)
+            
             # Pre-validation: check for obvious syntax issues
             self._pre_validate_syntax(sql, errors)
             if errors:
@@ -110,6 +151,10 @@ class AQLSQLChecker:
             
             if parsed is None:
                 errors.append("Failed to parse SQL statement")
+                # If preprocessing was enabled and parsing still failed,
+                # add a hint about Ariba-specific syntax
+                if preprocess and original_sql != sql:
+                    errors.append("Note: Ariba-specific clauses were removed during pre-processing")
                 return False, None, errors
             
             # Post-parsing semantic validation
@@ -216,17 +261,18 @@ class AQLSQLChecker:
             if not ast.args.get("this") and not ast.args.get("from") and not ast.args.get("tables"):
                 errors.append("DELETE statement requires target table")
     
-    def analyze_query(self, sql: str) -> Dict:
+    def analyze_query(self, sql: str, preprocess: bool = True) -> Dict:
         """
         Analyze an AQL SQL query and return comprehensive information.
         
         Args:
             sql: AQL SQL statement to analyze
+            preprocess: Whether to apply Ariba-specific pre-processing (default: True)
             
         Returns:
             Dictionary with analysis results
         """
-        is_valid, ast, errors = self.check_syntax(sql)
+        is_valid, ast, errors = self.check_syntax(sql, preprocess=preprocess)
         
         result = {
             'sql': sql,

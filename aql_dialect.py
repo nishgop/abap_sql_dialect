@@ -31,8 +31,12 @@ def parse_aql(sql: str) -> exp.Expression:
         Parsed expression tree or None if parsing fails
     """
     try:
-        return AQL.Parser().parse_one(sql)
-    except Exception:
+        # Parse using standard parser with Postgres dialect
+        # AQL is essentially Postgres-compatible with custom functions
+        from sqlglot import parse_one
+        return parse_one(sql, dialect='postgres')
+    except Exception as e:
+        # Return None on error to allow error handling downstream
         return None
 
 

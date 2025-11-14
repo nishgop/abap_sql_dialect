@@ -13,15 +13,18 @@ import sys
 from io import StringIO
 
 # Import ABAP test modules
-from test_basic import TestBasicSQLSyntax
-from test_extended import (
-    TestJoins, TestAggregates, TestWindowFunctions,
-    TestSubqueries, TestCase, TestUnion
+from test_checker import TestABAPSQLChecker
+from test_checker_extended import (
+    TestJoinVariants, TestAggregateFunctions, TestWindowFunctions,
+    TestDateTimeFunctions, TestStringFunctions, TestMathFunctions,
+    TestOrderByVariants, TestSetOperations, TestCTEAndSubqueries
 )
 from test_abap_specific import (
-    TestABAPSpecificSyntax, TestABAPHostVariables, TestABAPMultipleStatements
+    TestABAPSpecificSyntax, TestABAPHostVariables, TestABAPTableOperations,
+    TestABAPJoinSyntax, TestABAPAggregateExtensions, TestABAPCaseExpressions,
+    TestABAPLimitOffset, TestABAPNullHandling, TestABAPDistinctVariants, TestABAPInOperator
 )
-from test_negative import TestNegativeTests
+from test_negative import TestNegativeCases
 from test_abap_enhanced import (
     TestABAPEnhancedKeywords, TestABAPStringOperators, TestABAPFunctions,
     TestABAPHostVariables as TestABAPEnhancedHostVars, TestABAPTildeOperator
@@ -121,7 +124,7 @@ def main():
     print("▓"*80 + "\n")
     
     # 1. ABAP Basic Tests
-    basic_tests = [TestBasicSQLSyntax]
+    basic_tests = [TestABAPSQLChecker]
     result1 = run_test_suite("ABAP BASIC SYNTAX", basic_tests, verbosity=1)
     success, count = print_summary("ABAP Basic", result1)
     total_success += success
@@ -130,12 +133,15 @@ def main():
     
     # 2. ABAP Extended SQL Tests
     extended_tests = [
-        TestJoins,
-        TestAggregates,
+        TestJoinVariants,
+        TestAggregateFunctions,
         TestWindowFunctions,
-        TestSubqueries,
-        TestCase,
-        TestUnion
+        TestDateTimeFunctions,
+        TestStringFunctions,
+        TestMathFunctions,
+        TestOrderByVariants,
+        TestSetOperations,
+        TestCTEAndSubqueries
     ]
     result2 = run_test_suite("ABAP EXTENDED SQL", extended_tests, verbosity=1)
     success, count = print_summary("ABAP Extended", result2)
@@ -147,7 +153,14 @@ def main():
     abap_specific_tests = [
         TestABAPSpecificSyntax,
         TestABAPHostVariables,
-        TestABAPMultipleStatements
+        TestABAPTableOperations,
+        TestABAPJoinSyntax,
+        TestABAPAggregateExtensions,
+        TestABAPCaseExpressions,
+        TestABAPLimitOffset,
+        TestABAPNullHandling,
+        TestABAPDistinctVariants,
+        TestABAPInOperator
     ]
     result3 = run_test_suite("ABAP-SPECIFIC FEATURES", abap_specific_tests, verbosity=1)
     success, count = print_summary("ABAP Specific", result3)
@@ -170,7 +183,7 @@ def main():
     all_results.append(("ABAP Enhanced", result4))
     
     # 5. ABAP Negative Tests
-    negative_tests = [TestNegativeTests]
+    negative_tests = [TestNegativeCases]
     result5 = run_test_suite("ABAP NEGATIVE TESTS (Error Detection)", negative_tests, verbosity=1)
     success, count = print_summary("ABAP Negative", result5)
     total_success += success
